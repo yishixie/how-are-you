@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<!--  
+Yishi Xie
+2014
+-->
+
+
+
+<title>How are you?</title>
+<style>
+/* reset browser stylesheet */
+body { margin: 0; overflow: hidden; }
+</style>
+<script type="text/javascript" src="createjs.js"></script>
+</head>
+	
+	
+<body onload="init();">
+	
+	<canvas id="maiCanvas" style="background-color: yellow;"></canvas>
+	<script>
+	var canvas;
+	var stage;
+    var w; var h;
+	
+	var mouse = {x:w/2, y:h/2+80};
+
+	function init(){
+		canvas = document.getElementById("maiCanvas");
+		stage = new createjs.Stage(canvas);
+		
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+		
+        w = canvas.width;
+        h = canvas.height;
+
+		drawWithMouse();
+	}
+
+	function drawWithMouse() {	
+
+		/* Eyes */
+		eye1 = new createjs.Shape();
+        eye1.graphics.beginFill("black").drawCircle(0,0,50);
+        eye1.x = w/2 - 140;
+		eye1.y = h/2 - 85;
+        
+        eye2 = new createjs.Shape();
+        eye2.graphics.beginFill("black").drawCircle(0,0,50);
+        eye2.x = w/2 + 140;
+		eye2.y = h/2 - 85;
+        
+        /* Eyeballs */
+        eyeball1 = new createjs.Shape();
+        eyeball1.graphics.beginFill("white").drawCircle(0,0,25);
+        eyeball1.x = eye1.x +5
+		eyeball1.y = h/2 - 85;
+		if(mouse.x < w/2) eyeball1.x = eye1.x -((w/2 - mouse.x)/25);
+		if(mouse.x > w/2) eyeball1.x = eye1.x +((mouse.x-w/2)/25);
+
+        eyeball2 = new createjs.Shape();
+        eyeball2.graphics.beginFill("white").drawCircle(0,0,25);
+        eyeball2.x = eye2.x-5
+		eyeball2.y = h/2 - 85;
+		if(mouse.x < w/2) eyeball2.x = eye2.x -((w/2 - mouse.x)/25);
+		if(mouse.x > w/2) eyeball2.x = eye2.x +((mouse.x-w/2)/25);
+
+		/* Smile */
+        smile = new createjs.Shape();
+        smileWidth = 200;
+		smile.x = w/2 - smileWidth/2;
+		smile.y = h/2 +80;
+		smileDepth = 0;
+		if (mouse.y <= h/2) smileDepth = (mouse.y - h/2)/(h/2)*(-50); // happy
+		if (mouse.y > h/2) smileDepth = (mouse.y - h/2)/(h/2)*(-50); // not happy
+		smile.graphics.setStrokeStyle(25).beginStroke("#000");
+        smile.graphics.moveTo(0,0).quadraticCurveTo(smileWidth/2,smileDepth,200,0);
+        
+        /* Shy blushes */
+		blushL = new createjs.Shape();
+		blushR = new createjs.Shape();
+		if (mouse.y < h/2) { // happy -> blushes!
+			blushLr = 0 + (smile.y-mouse.y)*(20-0)/smile.y;
+			blushRr = 0 + (smile.y-mouse.y)*(20-0)/smile.y;
+			blushLR = 0 + (smile.y-mouse.y)*(90-0)/smile.y;
+			blushRR = 0 + (smile.y-mouse.y)*(90-0)/smile.y;
+		} else { // not happy -> no blushes
+			blushLr=0;
+			blushLR=0;
+			blushRr=0;
+			blushRR=0;
+		}
+		blushY = h/2 + 15; // height of blushes
+		pink = "rgb(255, 148, 161)"
+		blushL.graphics.beginRadialGradientFill([pink,"yellow"], [0, 1], w/2-250, blushY, blushLr, w/2-250, blushY, blushLR).drawCircle(w/2-250 , blushY, blushLR);
+		blushR.graphics.beginRadialGradientFill([pink,"yellow"], [0, 1], w/2+250, blushY, blushRr, w/2+250, blushY, blushRR).drawCircle(w/2+250 , blushY, blushRR);
+
+		/* Add to stage */
+        stage.addChild(eye1, eye2, eyeball1, eyeball2, smile, blushL, blushR);
+        stage.update();
+	}
+	
+	/* Tracking mouse coordinates
+		http://stackoverflow.com/questions/2601097/how-to-get-the-mouse-position-without-events-without-moving-the-mouse
+	*/
+	document.addEventListener('mousemove', function(e) {
+		mouse.x = e.clientX || e.pageX;
+		mouse.y = e.clientY || e.pageY;
+		init();
+	}, false);
+	
+	/* Redraw to fit resized window */
+	window.addEventListener('resize', init, false);
+	
+	</script>
+</body>
+</html>
+
