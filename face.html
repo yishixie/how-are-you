@@ -33,6 +33,8 @@ body { margin: 0; overflow: hidden; }
 	var tear1, tear1Xchange = 0, tear1Ychange = 0;
 	var tear2, tear2Xchange = 0, tear2Ychange = 0;
 
+	var tearStatus = 0, tearListner;
+
 	function init(){
 		canvas = document.getElementById("maiCanvas");
 		stage = new createjs.Stage(canvas);
@@ -45,6 +47,8 @@ body { margin: 0; overflow: hidden; }
 
 		/* redraw eyes when mouse moves */
 		drawWithMouse();
+
+		createjs.Ticker.setFPS(30);
 	}
 
 	function drawTearDrops() {
@@ -64,17 +68,29 @@ body { margin: 0; overflow: hidden; }
 	}
 
 	function tickTearDrops() {
-		/* clear previous tears to prevent overlapping */
-		tear1.graphics.clear();
-		tear2.graphics.clear();
-		/* increment Xchange */
-		tear1Xchange -= 1;
-		tear1Ychange += 1;
-		tear2Xchange += 1;
-		tear2Ychange += 1;
-		/* draw and update */
-		drawTearDrops();
-		stage.update();
+
+		if(tearStatus == 1) {
+			if (tear1.y < h) {
+			// tears still visible
+				/* clear previous tears to prevent overlapping */
+				tear1.graphics.clear();
+				tear2.graphics.clear();
+				/* increment Xchange */
+				tear1Xchange -= 2;
+				tear1Ychange += 2;
+				tear2Xchange += 2;
+				tear2Ychange += 2;
+				/* draw and update */
+				drawTearDrops();
+				stage.update();
+			} else { // tears not visible anymore, reset status
+				tearStatus = 0;
+				tear1Xchange = 0;
+				tear1Ychange = 0;
+				tear2Xchange = 0;
+				tear2Ychange = 0;
+			}
+		}
 	}
 
 	function drawWithMouse() {	
@@ -160,16 +176,28 @@ body { margin: 0; overflow: hidden; }
 
 
 		if (mouse.y > h/2) {
-			/* initialize tear drops */
-		tear1 = new createjs.Shape();
-		tear2 = new createjs.Shape();
-		drawTearDrops();
-		stage.addChild(tear1, tear2);
-		stage.update();
-			/* turn on ticker for teardrops */
-			createjs.Ticker.on("tick", tickTearDrops);
-			createjs.Ticker.setFPS(30);
+			if (tearStatus == 0) { // not crying yet , start crying
+				/* initialize tear drops */
+				tear1 = new createjs.Shape();
+				tear2 = new createjs.Shape();
+				drawTearDrops();
+				stage.addChild(tear1, tear2);
+				stage.update();
+				/* turn on ticker for teardrops */
+				tearListner = createjs.Ticker.on("tick", tickTearDrops);
+				tearStatus = 1;
+			} else { // already crying, do nothing
 
+			}
+		} else {// stop crying when mouse moves out
+			createjs.Ticker.off("tick", tearListner);
+			tear1.graphics.clear();
+			tear2.graphics.clear();
+			tearStatus = 0;
+			tear1Xchange = 0;
+			tear1Ychange = 0;
+			tear2Xchange = 0;
+			tear2Ychange = 0;
 		}
 	}, false);
 	
