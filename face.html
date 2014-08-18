@@ -29,6 +29,10 @@ body { margin: 0; overflow: hidden; }
 	
 	var mouse = {x:w/2, y:h/2+80};
 
+	var eye1, eye2, eyebal1, eyeball2, smile, blushL, blushR;
+	var tear1, tear1Xchange = 0, tear1Ychange = 0;
+	var tear2, tear2Xchange = 0, tear2Ychange = 0;
+
 	function init(){
 		canvas = document.getElementById("maiCanvas");
 		stage = new createjs.Stage(canvas);
@@ -39,7 +43,38 @@ body { margin: 0; overflow: hidden; }
         w = canvas.width;
         h = canvas.height;
 
+		/* redraw eyes when mouse moves */
 		drawWithMouse();
+	}
+
+	function drawTearDrops() {
+		/* draw vector tears */ 
+		tear1.graphics.f("rgba(70,177,255,254)").ss(1).s("rgba(70,177,255,254)").p("AKKOsYDSiqhQi+BupEYocCCjwBkhkEiYhZE2GPFAFKjS").cp().ef().es();
+		tear2.graphics.f("rgba(70,177,255,254)").ss(1).s("rgba(70,177,255,254)").p("ADmOsYjIiqBQi+hupEYISCCDwBkBuEiYBaE2mQFAlUjS").cp().ef().es();
+
+		/* position tears using Xchange variables */
+		tear1.x = w/2 - 250 + tear1Xchange;
+		tear1.y = h/2 + tear1Ychange;
+
+		tear2.x = w/2 + 150 + tear2Xchange;
+		tear2.y = h/2 + tear2Ychange;
+
+
+
+	}
+
+	function tickTearDrops() {
+		/* clear previous tears to prevent overlapping */
+		tear1.graphics.clear();
+		tear2.graphics.clear();
+		/* increment Xchange */
+		tear1Xchange -= 1;
+		tear1Ychange += 1;
+		tear2Xchange += 1;
+		tear2Ychange += 1;
+		/* draw and update */
+		drawTearDrops();
+		stage.update();
 	}
 
 	function drawWithMouse() {	
@@ -111,7 +146,31 @@ body { margin: 0; overflow: hidden; }
 	document.addEventListener('mousemove', function(e) {
 		mouse.x = e.clientX || e.pageX;
 		mouse.y = e.clientY || e.pageY;
-		init();
+		/* clear to prevent overlapping */
+		eye1.graphics.clear();
+		eye2.graphics.clear();
+		eyeball1.graphics.clear();
+		eyeball2.graphics.clear();
+		smile.graphics.clear();
+		blushL.graphics.clear();
+		blushR.graphics.clear();
+		/* redraw */
+		drawWithMouse();
+
+
+
+		if (mouse.y > h/2) {
+			/* initialize tear drops */
+		tear1 = new createjs.Shape();
+		tear2 = new createjs.Shape();
+		drawTearDrops();
+		stage.addChild(tear1, tear2);
+		stage.update();
+			/* turn on ticker for teardrops */
+			createjs.Ticker.on("tick", tickTearDrops);
+			createjs.Ticker.setFPS(30);
+
+		}
 	}, false);
 	
 	/* Redraw to fit resized window */
