@@ -83,12 +83,13 @@ body { margin: 0; overflow: hidden; }
 				/* draw and update */
 				drawTearDrops();
 				stage.update();
+				
 			} else { // tears not visible anymore, reset status
-				tearStatus = 0;
 				tear1Xchange = 0;
 				tear1Ychange = 0;
 				tear2Xchange = 0;
 				tear2Ychange = 0;
+				drawTearDrops();
 			}
 		}
 	}
