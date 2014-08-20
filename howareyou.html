@@ -6,6 +6,7 @@
 <!--  
 Yishi Xie
 2014
+How are you? - Javascript Project
 -->
 
 
@@ -27,6 +28,7 @@ body { margin: 0; overflow: hidden; }
 	var stage;
     var w; var h;
 	
+	// Mouse Location when lauching
 	var mouse = {x:w/2, y:h/2+80};
 
 	var eye1, eye2, eyebal1, eyeball2, smile, blushL, blushR;
@@ -39,6 +41,7 @@ body { margin: 0; overflow: hidden; }
 		canvas = document.getElementById("maiCanvas");
 		stage = new createjs.Stage(canvas);
 		
+		// set the canvas size to window size
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight;
 		
